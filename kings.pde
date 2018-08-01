@@ -55,12 +55,17 @@ String txt_src = "txt.json";
 
 void setup() {
     // size(640, 360);
-    size(1080, 360);
+    // size(1080, 360);
+    size(400, 800);
     frameRate(60);
     background(204);
     speech_in = new int[0];
     speech_out = new int[0];
-    mono = createFont("Artisan12.ttf", 14);
+    // mono = createFont("Artisan12.ttf", 14);
+    // mono = createFont("Kings-Regular.ttf", 14);
+    // mono = createFont("Kings-Regular.ttf", 18);
+    mono = createFont("Kings-Regular.ttf", 24);
+    // mono = createFont("Kings-Regular.ttf", 72);
     textFont(mono);
     device = new AudioDevice(this, 44000, bands);
     r_width = width/float(bands);
@@ -99,8 +104,10 @@ void draw() {
         background(204);
     */
 
-    background(204);
-    fill(0);
+    // background(204);
+    background(0);
+    // fill(0);
+    fill(255);
     noStroke();
         
     for (Word w : words) {
@@ -171,7 +178,7 @@ void draw() {
         if (circle)
             ellipse(width/2, height/2, rms_scaled, rms_scaled);
         if (wave)
-            rect(counter*granularity%width, 360-rms_scaled, granularity, rms_scaled);
+            rect(counter*granularity%width, height-rms_scaled, granularity, rms_scaled);
     }
 
     // println(sample.frames());
