@@ -57,28 +57,19 @@ void setup() {
     // size(640, 360);
     // size(1080, 360);
     size(400, 800);
+    smooth();
+
     frameRate(60);
     background(204);
     speech_in = new int[0];
     speech_out = new int[0];
-    // mono = createFont("Artisan12.ttf", 14);
-    // mono = createFont("Kings-Regular.ttf", 14);
-    // mono = createFont("Kings-Regular.ttf", 18);
-    mono = createFont("Kings-Regular.ttf", 24);
-    // mono = createFont("Kings-Regular.ttf", 72);
+
+    // processing font using .ttf
+    mono = createFont("Speech-to-text-normal.ttf", 18);
     textFont(mono);
+
     device = new AudioDevice(this, 44000, bands);
     r_width = width/float(bands);
-
-    // sample = new SoundFile(this, "martin-edit.aiff");
-    // sample = new SoundFile(this, "mountain-excerpt.wav");
-    // sample = new SoundFile(this, "mountaintop-trim-60.wav");
-    // sample = new SoundFile(this, "mountaintop-trim-60.flac");
-    // sample = new SoundFile(this, "mountaintop.flac");
-    // sample = new SoundFile(this, "mountaintop.wav");
-    // sample = new SoundFile(this, "mountain-excerpt.flac");
-    // sample = new SoundFile(this, "mountaintop-trim.wav");
-    // sample = new SoundFile(this, "mountaintop-trim.flac");
 
     sample = new SoundFile(this, speech_src);
     load_gc_json(txt_src);
@@ -105,13 +96,16 @@ void draw() {
     */
 
     // background(204);
-    background(0);
+    // background(0);
+    fill(0,100);
+    rect(0,0,width,height);
     // fill(0);
     fill(255);
     noStroke();
         
     for (Word w : words) {
-        w.display();
+        // w.display(counter%255);
+        w.display(255);
     }
     
     if (playing) {
@@ -132,7 +126,7 @@ void draw() {
 
         if (process) {
             if (text)
-                text(txt[speech_counter%7], 20, speech_counter*20);
+                // text(txt[speech_counter%7], 20, speech_counter*20);
                 // text(txt[speech_counter].charAt(counter%txt[speech_counter].length()), 16*(counter%txt[speech_counter].length()), speech_counter*20);
                 // x += textWidth(message.charAt(i))
                 // this will be the txt incrementer but
@@ -180,6 +174,12 @@ void draw() {
         if (wave)
             rect(counter*granularity%width, height-rms_scaled, granularity, rms_scaled);
     }
+
+    /*
+    for (int i = 0; i < 10; i++) {
+        stroke_text("Test", i, i*70, 50);
+    }
+    */
 
     // println(sample.frames());
     counter++;
@@ -353,5 +353,20 @@ Boolean load_gc_json(String filename) {
     return true;
 }
 
+void stroke_text(String text, int weight, int x, int y) {
 
-    
+    // see https://forum.processing.org/two/discussion/16700/how-to-outline-text
+
+    int value = 255 - (weight * 50);
+    /*
+    fill(value);
+    for (int i = -1; i < 2; i++) {
+    // for (int i = -weight; i <= weight; i++) {
+        text(text, x+i, y);
+        text(text, x, y+i);
+    }
+    */
+    fill(value);
+    text(text, x, y);
+}
+

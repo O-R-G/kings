@@ -18,9 +18,9 @@ class Word {
     }
   
     // display
-    void display() {
+    void display(int value) {
         // fill(0);
-        fill(255);
+        fill(value);
         float duration = sample.duration();
         // float x = map(in, 0.0, duration, 0.0, width);
         int loops = 1; // [10]
@@ -42,3 +42,4 @@ class Word {
         */
     }
 }
+
