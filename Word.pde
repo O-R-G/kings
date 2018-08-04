@@ -5,41 +5,33 @@
 
 class Word {
 
-    float in, out;
     String txt;
-    // boolean active = true;
-  
-    // constructor
-    // Word(float in_, float out_) {    
+    float in, out, width;
+    Boolean spoken = false;
+    // float duration = sample.duration();
+
     Word(float in_, float out_, String txt_) {    
         in = in_;
         out = out_;
         txt = txt_;
+        width = textWidth(this.txt);
     }
   
-    // display
-    void display(int value) {
-        // fill(0);
-        fill(value);
-        float duration = sample.duration();
-        // float x = map(in, 0.0, duration, 0.0, width);
-        int loops = 1; // [10]
-        float x = map(in, 0.0, duration, 0.0, width*loops);
+    Boolean spoken() {
         float now = (float)(millis() - millis_start)/1000;
-        float now_adjust = 1.0;
-        // now -= now_adjust;
         if (playing)
-            if ((in <= now) && (out >= now)) 
-                // text(txt, x, height/8);
-                text(txt, x % width, height/8);
+            if ((in <= now)) 
+                return true;
+            else 
+                return false;
+        else
+            return false;
+    }
 
-        println(now);
-
-        /*
-        println(txt);
-        println(in);
-        println(x);
-        */
+    void display(int fill, int _x, int _y) {
+        fill(fill);
+        // float x = map(in, 0.0, duration, 0.0, width);
+        text(txt, _x, _y);
     }
 }
 

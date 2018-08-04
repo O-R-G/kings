@@ -18,14 +18,10 @@ JSONObject json;
 PFont mono;
 
 Word[] words;           // array of Word objects
-
 String[] txt;           // speech fragments as text string
-int[] speech_in;        // audio in per speech fragment
-int[] speech_out;       // audio out per speech fragment
 int[][] speech;         // audio in & out per speech fragment
 
 int millis_start = 0;
-
 Boolean playing = false;
 Boolean bar = true;
 Boolean circle = false;
@@ -34,6 +30,7 @@ Boolean wave = false;
 Boolean text = false;
 Boolean process = false;
 Boolean speech_flag = false;
+Boolean lastwordspoken = false;
 int counter = 0;
 int bands = 128;                    // FFT bands (multiple of sampling rate)
 int granularity = 3;
@@ -41,76 +38,72 @@ int in = 0;
 int out = 0;
 int speech_counter;
 int silence_min = 30;      // [10]
+int _x;   
+int _y;
 float scale = 5.0;
 float r_width;
 float sum_rms;
-// float[] sum_fft = new float[bands];     // smoothing vector
-// float smooth_factor = 0.25;          // smoothing factor
+float[] sum_fft = new float[bands];   // smoothing vector
 float smooth_factor = 0.175;          // smoothing factor
 float playback_rate = 1.0;
 float amp_floor = 0.04; // 0.02 0.04 [0.08]
+float _space; 
+float _leading; 
 String text_markup = " .I come to this magnificent house of worship tonight,because my conscience leaves me no other choice.I join you in this meeting because I'm in deepest agreement,with the aims and work,of the organization which has brought us together:Clergy and Laymen Concerned About Vietnam.";
 String speech_src = "speech.wav";
 String txt_src = "txt.json";
 
 void setup() {
-    // size(640, 360);
-    // size(1080, 360);
     size(400, 800);
+    // size(1200, 200);
     smooth();
-
     frameRate(60);
-    background(204);
-    speech_in = new int[0];
-    speech_out = new int[0];
-
-    // processing font using .ttf
     mono = createFont("Speech-to-text-normal.ttf", 18);
     textFont(mono);
-
+    _x = 0;   
+    _y = height/8;
+    _space = textWidth(" "); 
+    _leading = 22;
     device = new AudioDevice(this, 44000, bands);
     r_width = width/float(bands);
-
     sample = new SoundFile(this, speech_src);
     load_gc_json(txt_src);
-
-    // load_gc_json("mountain-excerpt.json");
-    // load_gc_json("mountaintop-trim-60.json");
-    // load_gc_json("mountaintop.json");
-
     Boolean processed_text = process_text();
     println("READY ...");
-        
-    // play_sample();
-
-    // exec command in terminal
-    // exec("/usr/bin/say", "Ready ...");
-    // exec("/bin/bash", "GOOGLE_APPLICATION_CREDENTIALS='/Users/reinfurt/Applications/Kings speech-to-text-cb6be9604529.json'");
-    // exec("/Users/reinfurt/Applications/google-cloud-sdk/bin/gcloud", "ml speech recognize /Users/reinfurt/mountain-longevity.flac --language-code='en-US' > ok.json");
 }
 
 void draw() {
     /*
-    if (counter*granularity%width == 0 || bar || circle)
-        background(204);
-    */
-
-    // background(204);
-    // background(0);
     fill(0,100);
     rect(0,0,width,height);
-    // fill(0);
+    */
+    background(0);
     fill(255);
     noStroke();
-        
-    for (Word w : words) {
-        // w.display(counter%255);
-        w.display(255);
-    }
+
+    // ** still dont have the line by line brick by brick working **
+    // need to know when it is the last word spoken and only then
+    // increment the _y, otherwise always cranking up the value
+    // Boolean should prob be in global scope 
+
+    _x = 0;
+    // Boolean lastwordspoken = false;
+    lastwordspoken = false;
     
+    for (Word w : words) {
+        // if (!lastwordspoken) {
+            if (w.spoken() && !lastwordspoken) { 
+                w.display(255, _x % width, _y + height/8);
+                _x += (w.width + _space);
+            } else if (!lastwordspoken) {
+                if ((_x % width + w.width > width))
+                    _y += _leading;
+                lastwordspoken = true;
+            }
+        // }
+    }
+
     if (playing) {
-        // sample.pan(map(mouseX, 0, width, -1.0, 1.0));
-        // sample.amp(map(mouseX, 0, width, 0.0, 1.0));
         /*
         fft.analyze();
         for (int i = 0; i < bands; i++) {
@@ -118,54 +111,9 @@ void draw() {
             rect( i*r_width, height, r_width, -sum_fft[i]*height*scale );
         }
         */
-
         // rms.analyze() returns value between 0 and 1
-        // scaled to height/2 and then multiplied by a scale factor
         sum_rms += (rms.analyze() - sum_rms) * smooth_factor;  
         float rms_scaled = sum_rms * (height/2) * scale;
-
-        if (process) {
-            if (text)
-                // text(txt[speech_counter%7], 20, speech_counter*20);
-                // text(txt[speech_counter].charAt(counter%txt[speech_counter].length()), 16*(counter%txt[speech_counter].length()), speech_counter*20);
-                // x += textWidth(message.charAt(i))
-                // this will be the txt incrementer but
-                // for now, just one character at a time
-                // int txt_increment = (counter - counter_in) / txt[speech_counter].length();
-
-            // all of this to go into int[][] set_speech()
-            // in = counter;
-
-            if (sum_rms > amp_floor) {            
-                if (counter - out > silence_min) {
-                    if (!speech_flag) {                        
-                        fill(0);
-                        speech_flag = true;
-                        speech_counter++;
-                        in = counter;
-                        println("+");
-                        println(speech_counter);
-                        println("> in : " + in);
-                    }
-                println("speaking . . . " + speech_counter);
-                }
-            } else {
-                // println(counter - in);
-                // println("silence");
-                if (counter - in > silence_min) {
-                    fill(255,255,0);
-                    rect(counter*granularity%width, 0, granularity, height);
-                    if (speech_flag) { 
-                        speech_flag = false;
-                            out = counter;
-                            speech_in = append(speech_in, in);
-                            speech_out = append(speech_out, out);    
-                            println("> out : " + out);
-                    }
-                println("-- silence -- " + speech_counter);
-                }
-            }
-        } 
 
         if (bar)
             rect(0, 0, rms_scaled, 10);
@@ -174,14 +122,6 @@ void draw() {
         if (wave)
             rect(counter*granularity%width, height-rms_scaled, granularity, rms_scaled);
     }
-
-    /*
-    for (int i = 0; i < 10; i++) {
-        stroke_text("Test", i, i*70, 50);
-    }
-    */
-
-    // println(sample.frames());
     counter++;
 }
 
@@ -297,7 +237,11 @@ Boolean stop_sample() {
 }
 
 Boolean process_text() {   
-    txt = splitTokens(text_markup, ",.:");
+    // txt = splitTokens(text_markup, ",.:");
+    // txt = join(words, " ");
+    // txt = ["hello..........","o"];
+
+    txt = splitTokens("OK, ready", ",.:");
     printArray(txt);
     return true;
 }
