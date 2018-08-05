@@ -6,8 +6,11 @@
 class Word {
 
     String txt;
-    float in, out, width;
+    float in, out;
+    float width;
+    int length;
     Boolean spoken = false;
+
     // float duration = sample.duration();
 
     Word(float in_, float out_, String txt_) {    
@@ -15,16 +18,22 @@ class Word {
         out = out_;
         txt = txt_;
         width = textWidth(this.txt);
+        length = txt.length();
     }
   
+    Boolean speaking() {
+        float now = (float)(millis() - millis_start)/1000;
+        if ((in <= now) && (out >= now)) 
+            return true;
+        else 
+            return false;
+    }
+
     Boolean spoken() {
         float now = (float)(millis() - millis_start)/1000;
-        if (playing)
-            if ((in <= now)) 
-                return true;
-            else 
-                return false;
-        else
+        if ((in <= now)) 
+            return true;
+        else 
             return false;
     }
 
