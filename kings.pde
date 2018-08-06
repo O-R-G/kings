@@ -49,9 +49,6 @@ String speech_src = "speech.wav";
 String txt_src = "txt.json";
 
 void setup() {
-    // size(400, 800);
-    // size(1200, 200);
-    // size(425, 550);
     size(600, 900);
     beginRecord(PDF, "out.pdf");
     PDFrecording = true;
@@ -92,7 +89,7 @@ void draw() {
         for (Word w : words) {
             if (w.spoken()) { 
                 w.display(255, _x + box_x, _y + box_y);
-                if (!(_x + (w.width * 2) > box_w)) {
+                if (!(_x + w.width + 8 * _space > box_w)) {
                     _x += (w.width + _space);
                 } else {
                     _x = 0;
@@ -163,7 +160,7 @@ void keyPressed() {
         case 'p': 
             if (PDFrecording)
                 endRecord();
-            println(** writing PDF to ./out.pdf **)
+            println("** writing PDF to ./out.pdf **");
             // PDFrecording = !PDFrecording;
             exit();
             break;
@@ -225,7 +222,7 @@ Boolean play_sample() {
 Boolean stop_sample() {
     playing = false;        
     // rms = null;
-    sample.stop();  
+    sample.stop();
     return true;
 }
 
