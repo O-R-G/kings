@@ -28,6 +28,7 @@ Boolean spectrum = false;
 Boolean wave = false;
 Boolean speech_flag = false;
 Boolean lastwordspoken = false;
+Boolean PDFrecording = false;
 int counter = 0;
 int bands = 128;                    // FFT bands (multiple of sampling rate)
 int granularity = 3;
@@ -53,8 +54,9 @@ void setup() {
     // size(425, 550);
     size(600, 900);
     beginRecord(PDF, "out.pdf");
-    frameRate(60);
+    PDFrecording = true;
     smooth();
+    frameRate(60);
     mono = createFont("Speech-to-text-normal.ttf", 18);
     textFont(mono);
     _space = textWidth(" "); 
@@ -158,8 +160,18 @@ void keyPressed() {
                 sample.rate(playback_rate);
                 break;
             }
+        /*
+        case 'p': 
+            if (PDFrecording)
+                endRecord();
+            else
+                beginRecord(pdf);
+            PDFrecording = !PDFrecording;
+            break;
+        */
         case 'q': 
-            endRecord();
+            if (PDFrecording)
+                endRecord();
             exit();
             break;
         default:
