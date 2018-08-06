@@ -160,18 +160,11 @@ void keyPressed() {
                 sample.rate(playback_rate);
                 break;
             }
-        /*
         case 'p': 
             if (PDFrecording)
                 endRecord();
-            else
-                beginRecord(pdf);
-            PDFrecording = !PDFrecording;
-            break;
-        */
-        case 'q': 
-            if (PDFrecording)
-                endRecord();
+            println(** writing PDF to ./out.pdf **)
+            // PDFrecording = !PDFrecording;
             exit();
             break;
         default:
