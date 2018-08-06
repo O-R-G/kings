@@ -50,9 +50,11 @@ String txt_src = "txt.json";
 void setup() {
     // size(400, 800);
     // size(1200, 200);
-    size(425, 550);
-    smooth();
+    // size(425, 550);
+    size(600, 900);
+    beginRecord(PDF, "out.pdf");
     frameRate(60);
+    smooth();
     mono = createFont("Speech-to-text-normal.ttf", 18);
     textFont(mono);
     _space = textWidth(" "); 
@@ -61,7 +63,7 @@ void setup() {
     box_y = 40;
     box_w = width - box_x * 2;
     box_h = height - box_y * 2;
-    device = new AudioDevice(this, 44000, bands);
+    device = new AudioDevice(this, 44100, bands);
     r_width = width/float(bands);
     sample = new SoundFile(this, speech_src);
     load_gc_json(txt_src);
@@ -88,7 +90,7 @@ void draw() {
         for (Word w : words) {
             if (w.spoken()) { 
                 w.display(255, _x + box_x, _y + box_y);
-                if (!(_x + w.width > box_w)) {
+                if (!(_x + (w.width * 2) > box_w)) {
                     _x += (w.width + _space);
                 } else {
                     _x = 0;
@@ -156,9 +158,6 @@ void keyPressed() {
                 sample.rate(playback_rate);
                 break;
             }
-        case 'p': 
-            beginRecord(PDF, "out.pdf");
-            break;
         case 'q': 
             endRecord();
             exit();
