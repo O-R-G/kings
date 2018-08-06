@@ -85,16 +85,9 @@ void draw() {
         sum_rms += (rms.analyze() - sum_rms) * smooth_factor;  
         float rms_scaled = sum_rms * (height/2) * scale;
 
-        float float_fill = map(rms.analyze(), 0.0, 0.5, 0.0, 255.0);
-        fill(int(float_fill));
-
-        // float x = map(in, 0.0, duration, 0.0, width);
-
-
         for (Word w : words) {
             if (w.spoken()) { 
-                // w.display(255, _x + box_x, _y + box_y);
-                w.display(int(float_fill), _x + box_x, _y + box_y);
+                w.display(255, _x + box_x, _y + box_y);
                 if (!(_x + w.width > box_w)) {
                     _x += (w.width + _space);
                 } else {

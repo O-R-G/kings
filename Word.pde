@@ -10,6 +10,7 @@ class Word {
     float width;
     int length;
     Boolean spoken = false;
+    float opacity = 0.0;    // how to set float as null?
 
     // float duration = sample.duration();
 
@@ -38,8 +39,13 @@ class Word {
     }
 
     void display(int fill, int _x, int _y) {
-        fill(fill);
-        // float x = map(in, 0.0, duration, 0.0, width);
+        // rms.analyze() returns [0 ... 1]
+        // this changes throughout, not persistent word to word
+        // maybe need to process audio first to get amps
+        println(rms.analyze());
+        if (opacity == 0.0)
+            opacity = map(rms.analyze(), 0.0, 0.05, 100.0, 255.0);
+        fill(fill, int(opacity));
         text(txt, _x, _y);
     }
 }
