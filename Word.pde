@@ -39,6 +39,14 @@ class Word {
             return false;
     }
 
+    /*
+    float opacity(float value) {
+        if (opacity == 0.0)
+            // opacity = map(rms.analyze(), 0.0, 0.05, 100.0, 255.0);
+            opacity = map(rms.analyze(), 0.0, 0.05, 100.0, 255.0);
+    }
+    */
+
     void display(int fill, int _x, int _y) {
         // rms.analyze() returns [0 ... 1]
         // this changes throughout, not persistent word to word
@@ -47,7 +55,11 @@ class Word {
         if (opacity == 0.0)
             opacity = map(rms.analyze(), 0.0, 0.05, 100.0, 255.0);
         fill(fill, int(opacity));
-        text(txt, _x, _y);
+        // ** for now, but would be better as parameter 
+        // just unsure what to call it **
+        // maybe separate function for set opacity and another for display
+        if (PDFoutput)
+            text(txt, _x, _y);
     }
 }
 

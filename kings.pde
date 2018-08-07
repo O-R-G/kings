@@ -28,7 +28,7 @@ Boolean spectrum = false;
 Boolean wave = false;
 Boolean speech_flag = false;
 Boolean lastwordspoken = false;
-Boolean PDFrecording = false;
+Boolean PDFoutput = false;
 int counter = 0;
 int bands = 128;                    // FFT bands (multiple of sampling rate)
 int granularity = 3;
@@ -51,7 +51,7 @@ String txt_src = "txt.json";
 void setup() {
     size(600, 900);
     beginRecord(PDF, "out.pdf");
-    PDFrecording = true;
+    // PDFoutput = false;
     smooth();
     frameRate(60);
     mono = createFont("Speech-to-text-normal.ttf", 18);
@@ -88,6 +88,8 @@ void draw() {
 
         for (Word w : words) {
             if (w.spoken()) { 
+// if (w.opacity == 0.0)
+println(w.opacity);
                 w.display(255, _x + box_x, _y + box_y);
                 if (!(_x + w.width + 8 * _space > box_w)) {
                     _x += (w.width + _space);
@@ -114,6 +116,10 @@ void draw() {
         }
         */
 
+    }
+    if (PDFoutput) {
+        endRecord();
+        exit();
     }
     counter++;
 }
@@ -158,11 +164,13 @@ void keyPressed() {
                 break;
             }
         case 'p': 
-            if (PDFrecording)
+            /*
+            if (PDFoutput)
                 endRecord();
+            */
+            PDFoutput = !PDFoutput;
             println("** writing PDF to ./out.pdf **");
-            // PDFrecording = !PDFrecording;
-            exit();
+            // exit();
             break;
         default:
             break;
