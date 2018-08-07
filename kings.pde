@@ -1,9 +1,9 @@
 /**
  * Processing Sound Library, Example 5
- * 
- * This sketch shows how to use the FFT class to analyze a stream  
- * of sound. Change the variable bands to get more or less 
- * spectral bands to work with. The smooth_factor variable determines 
+ *
+ * This sketch shows how to use the FFT class to analyze a stream
+ * of sound. Change the variable bands to get more or less
+ * spectral bands to work with. The smooth_factor variable determines
  * how much the signal will be smoothed on a scale form 0-1.
  */
 
@@ -35,7 +35,7 @@ int granularity = 3;
 int in = 0;
 int out = 0;
 int silence_min = 30;               // [10]
-int box_x, box_y, box_w, box_h;     // text box origin 
+int box_x, box_y, box_w, box_h;     // text box origin
 float scale = 5.0;
 float r_width;
 float sum_rms;
@@ -43,8 +43,8 @@ float[] sum_fft = new float[bands];   // smoothing vector
 float smooth_factor = 0.175;          // smoothing factor
 float playback_rate = 1.0;
 float amp_floor = 0.04; // 0.02 0.04 [0.08]
-float _space; 
-float _leading; 
+float _space;
+float _leading;
 String speech_src = "speech.wav";
 String txt_src = "txt.json";
 
@@ -56,7 +56,7 @@ void setup() {
     frameRate(60);
     mono = createFont("Speech-to-text-normal.ttf", 18);
     textFont(mono);
-    _space = textWidth(" "); 
+    _space = textWidth(" ");
     _leading = 24;
     box_x = 20;
     box_y = 40;
@@ -76,18 +76,18 @@ void draw() {
 
     if (playing && ((millis() - millis_start) >= sample.duration() * 1000))
         stop_sample();
-    
+
     int _x = 0;
     int _y = 0;
 
     if (playing) {
 
         // rms.analyze() returns [0 ... 1]
-        sum_rms += (rms.analyze() - sum_rms) * smooth_factor;  
+        sum_rms += (rms.analyze() - sum_rms) * smooth_factor;
         float rms_scaled = sum_rms * (height/2) * scale;
 
         for (Word w : words) {
-            if (w.spoken()) { 
+            if (w.spoken()) {
 // if (w.opacity == 0.0)
 println(w.opacity);
                 w.display(255, _x + box_x, _y + box_y);
@@ -126,44 +126,44 @@ println(w.opacity);
 
 void keyPressed() {
     switch(key) {
-        case 'b': 
+        case 'b':
             play_sample();
             bar = !bar;
             break;
-        case 'c': 
+        case 'c':
             play_sample();
             circle = !circle;
             break;
-        case 'w': 
+        case 'w':
             play_sample();
             wave = !wave;
             break;
-        case 's': 
+        case 's':
             play_sample();
             spectrum = !spectrum;
             break;
-        case ' ': 
+        case ' ':
             if (!playing)
                 play_sample();
             else
                 stop_sample();
             break;
-        case '.': 
+        case '.':
             stop_sample();
             break;
-        case '=': 
+        case '=':
             if (playing) {
                 playback_rate += .1;
                 sample.rate(playback_rate);
                 break;
             }
-        case '-': 
+        case '-':
             if (playing) {
                 playback_rate -= .1;
                 sample.rate(playback_rate);
                 break;
             }
-        case 'p': 
+        case 'p':
             /*
             if (PDFoutput)
                 endRecord();
@@ -182,24 +182,24 @@ void keyPressed() {
             background(204);
             rect(0,height - (amp_floor * height),width,1);
             println(amp_floor);
-            break;        
+            break;
         case DOWN:
             if (amp_floor > .01)
-                amp_floor-=.01;        
+                amp_floor-=.01;
             background(204);
             rect(0,height - (amp_floor * height),width,1);
             println(amp_floor);
-            break;        
+            break;
         case LEFT:
             if (granularity > 1)
                 granularity--;
             background(204);
-            break;        
+            break;
         case RIGHT:
             if (granularity < width/4)
                 granularity++;
             background(204);
-            break;        
+            break;
         default:
             break;
     }
@@ -219,7 +219,7 @@ Boolean play_sample() {
         fft.input(sample);
         */
         rms = new Amplitude(this);
-        rms.input(sample);           
+        rms.input(sample);
         playing = true;
         return true;
     } else {
@@ -228,7 +228,7 @@ Boolean play_sample() {
 }
 
 Boolean stop_sample() {
-    playing = false;        
+    playing = false;
     // rms = null;
     sample.stop();
     return true;
@@ -239,28 +239,29 @@ Boolean load_gc_json(String filename) {
     // parse json endpoint from google cloud speech-to-text api
 
     json = loadJSONObject(filename);
-    JSONArray json_results = json.getJSONArray("results");
+    JSONObject jsonResponse = json.getJSONObject("response");
+    JSONArray json_results = jsonResponse.getJSONArray("results");
 
     words = new Word[0];
 
     for (int i = 0; i < json_results.size(); i++) {
 
-        JSONObject r = json_results.getJSONObject(i); 
+        JSONObject r = json_results.getJSONObject(i);
         JSONArray json_alternatives = r.getJSONArray("alternatives");
 
         for (int j = 0; j < json_alternatives.size(); j++) {
 
-            JSONObject a = json_alternatives.getJSONObject(j); 
+            JSONObject a = json_alternatives.getJSONObject(j);
             float confidence = a.getFloat("confidence");
             String transcript = a.getString("transcript");
             JSONArray json_words = a.getJSONArray("words");
 
-            Word[] words_a;           
-            words_a = new Word[json_words.size()]; 
+            Word[] words_a;
+            words_a = new Word[json_words.size()];
 
             for (int k = 0; k < json_words.size(); k++) {
 
-                JSONObject w = json_words.getJSONObject(k); 
+                JSONObject w = json_words.getJSONObject(k);
                 float in = float(w.getString("startTime").replace("s",""));
                 float out = float(w.getString("endTime").replace("s",""));
                 String txt = w.getString("word");
@@ -269,7 +270,7 @@ Boolean load_gc_json(String filename) {
                 // words[k] = new Word(in, out, txt);
                 words_a[k] = new Word(in, out, txt);
 
-                /* 
+                /*
                 println(words[k].in);
                 println(words[k].out);
                 println(words[k].txt);
@@ -301,4 +302,3 @@ void stroke_text(String text, int weight, int x, int y) {
     fill(value);
     text(text, x, y);
 }
-

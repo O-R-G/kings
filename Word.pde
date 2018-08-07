@@ -13,29 +13,29 @@ class Word {
     Boolean spoken;
     // float duration = sample.duration();
 
-    Word(float in_, float out_, String txt_) {    
+    Word(float in_, float out_, String txt_) {
         in = in_;
         out = out_;
         txt = txt_;
         width = textWidth(this.txt);
         length = txt.length();
-        opacity = 0.0;    
+        opacity = 0.0;
         spoken = false;
     }
-  
+
     Boolean speaking() {
         float now = (float)(millis() - millis_start)/1000;
-        if ((in <= now) && (out >= now)) 
+        if ((in <= now) && (out >= now))
             return true;
-        else 
+        else
             return false;
     }
 
     Boolean spoken() {
         float now = (float)(millis() - millis_start)/1000;
-        if ((in <= now)) 
+        if ((in <= now))
             return true;
-        else 
+        else
             return false;
     }
 
@@ -55,11 +55,10 @@ class Word {
         if (opacity == 0.0)
             opacity = map(rms.analyze(), 0.0, 0.05, 100.0, 255.0);
         fill(fill, int(opacity));
-        // ** for now, but would be better as parameter 
+        // ** for now, but would be better as parameter
         // just unsure what to call it **
         // maybe separate function for set opacity and another for display
         if (PDFoutput)
             text(txt, _x, _y);
     }
 }
-
