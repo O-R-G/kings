@@ -11,7 +11,6 @@ class Word {
     float width;
     float opacity;
     Boolean spoken;
-    // float duration = sample.duration();
 
     Word(float in_, float out_, String txt_) {
         in = in_;
@@ -46,7 +45,6 @@ class Word {
 
     void display(int fill, int _x, int _y) {
         fill(fill, int(opacity));
-        // if (PDFoutput)
-            text(txt, _x, _y);
+        text(txt, _x, _y);
     }
 }

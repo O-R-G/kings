@@ -1,23 +1,31 @@
 /**
- * Processing Sound Library, Example 5
+ * kings
  *
- * This sketch shows how to use the FFT class to analyze a stream
- * of sound. Change the variable bands to get more or less
- * spectral bands to work with. The smooth_factor variable determines
- * how much the signal will be smoothed on a scale form 0-1.
- */
+ * speech to text transcription using google cloud api
+ * to visually animate the typesetting of spoken language 
+ * and translate the cadence into visual / dynamic form
+ *
+ * uses processing.sound for Amplitude analysis
+ * and processing.pdf for output
+ * uses Speech-to-text-normal as base
+ *
+ * developed for Coretta Scott and Martin Luther King
+ * memorial, Boston Common w/ Adam Pendleton & David Adjaye
+ *
+ */ 
+
 
 import processing.sound.*;
 import processing.pdf.*;
 
 SoundFile sample;
+AudioDevice device;
 FFT fft;
 Amplitude rms;
-AudioDevice device;
 JSONObject json;
 PFont mono;
 
-Word[] words;           // array of Word objects
+Word[] words;           
 String[] txt;           // speech fragments as text string
 
 int millis_start = 0;
@@ -49,17 +57,15 @@ String speech_src = "speech.wav";
 String txt_src = "txt.json";
 
 void setup() {
-    size(400,800);
-    // beginRecord(PDF, "out.pdf");
-    // PDFoutput = false;    
+    size(600,1000);
     smooth();
     frameRate(60);
     mono = createFont("Speech-to-text-normal.ttf", 18);
     textFont(mono);
-    _space = textWidth(" ");
-    _leading = 24;
-    box_x = 20;
-    box_y = 40;
+    _space = textWidth(" ");   // [], + 10
+    _leading = 26;  // [24]
+    box_x = 40;     // [20]
+    box_y = 60;     // [40]
     box_w = width - box_x * 2;
     box_h = height - box_y * 2;
     device = new AudioDevice(this, 44100, bands);
@@ -70,6 +76,13 @@ void setup() {
 }
 
 void draw() {
+
+    if (PDFoutput) {
+        beginRecord(PDF, "out.pdf");
+        mono = createFont("Speech-to-text-normal.ttf", 18);
+        textFont(mono);
+    }
+    
     background(0);
     fill(255);
     noStroke();
@@ -79,9 +92,10 @@ void draw() {
 
     int _x = 0;
     int _y = 0;
+
     if (playing) {
 
-        // rms.analyze() 
+        // analyze amplitude
         sum_rms += (rms.analyze() - sum_rms) * smooth_factor;
         float rms_scaled = sum_rms * (height/2) * scale;
 
@@ -96,6 +110,11 @@ void draw() {
                 } else {
                     _x = 0;
                     _y += _leading;
+                    if (_y + box_y + box_y > height) {
+                        _y = 0;
+                        fill(0);
+                        rect(10,10,width-10, height-10);
+                    }
                 }
             }
         }
@@ -115,6 +134,7 @@ void draw() {
         }
         */
     }
+
     if (PDFoutput) {
         PDFoutput = false;
         endRecord();
@@ -122,6 +142,122 @@ void draw() {
     }
     counter++;
 }
+
+/*
+
+    sound control
+
+*/
+
+Boolean play_sample() {
+    if (!playing) {
+        in = 0;
+        out = 0;
+        counter = 0;
+        millis_start = millis();
+        // sample.play();   // always throws error on exit (bug)
+        sample.loop();      // so use .loop() instead
+        /*
+        // not working, likely to do w/bands and sample rate
+        fft = new FFT(this, bands);
+        fft.input(sample);
+        */
+        rms = new Amplitude(this);
+        rms.input(sample);
+        playing = true;
+        return true;
+    } else {
+        return false;
+    }
+}
+
+Boolean stop_sample() {
+    playing = false;
+    // rms = null;
+    sample.stop();
+    return true;
+}
+
+/*
+
+    utility
+
+*/
+
+Boolean load_gc_json(String filename) {
+
+    // parse json endpoint from google cloud speech-to-text api
+
+    json = loadJSONObject(filename);
+    JSONObject jsonResponse = json.getJSONObject("response");
+    JSONArray json_results = jsonResponse.getJSONArray("results");
+
+    words = new Word[0];
+
+    for (int i = 0; i < json_results.size(); i++) {
+
+        JSONObject r = json_results.getJSONObject(i);
+        JSONArray json_alternatives = r.getJSONArray("alternatives");
+
+        for (int j = 0; j < json_alternatives.size(); j++) {
+
+            JSONObject a = json_alternatives.getJSONObject(j);
+            float confidence = a.getFloat("confidence");
+            String transcript = a.getString("transcript");
+            JSONArray json_words = a.getJSONArray("words");
+
+            Word[] words_a;
+            words_a = new Word[json_words.size()];
+
+            for (int k = 0; k < json_words.size(); k++) {
+
+                JSONObject w = json_words.getJSONObject(k);
+                float in = float(w.getString("startTime").replace("s",""));
+                float out = float(w.getString("endTime").replace("s",""));
+                String txt = w.getString("word");
+
+                // new word object to array
+                // words[k] = new Word(in, out, txt);
+                words_a[k] = new Word(in, out, txt);
+
+                /*
+                println(words[k].in);
+                println(words[k].out);
+                println(words[k].txt);
+                */
+            }
+
+            // populate words[]
+            for (Word w_a : words_a) {
+                words = (Word[])append(words, w_a);
+            }
+        }
+    }
+    return true;
+}
+
+void stroke_text(String text, int weight, int x, int y) {
+
+    // see https://forum.processing.org/two/discussion/16700/how-to-outline-text
+
+    int value = 255 - (weight * 50);
+    /*
+    fill(value);
+    for (int i = -1; i < 2; i++) {
+    // for (int i = -weight; i <= weight; i++) {
+        text(text, x+i, y);
+        text(text, x, y+i);
+    }
+    */
+    fill(value);
+    text(text, x, y);
+}
+
+/* 
+
+    interaction
+
+*/
 
 void keyPressed() {
     switch(key) {
@@ -204,100 +340,3 @@ void keyPressed() {
     }
 }
 
-Boolean play_sample() {
-    if (!playing) {
-        in = 0;
-        out = 0;
-        counter = 0;
-        millis_start = millis();
-        // sample.play();   // always throws error on exit (bug)
-        sample.loop();      // so use .loop() instead
-        /*
-        // not working, likely to do w/bands and sample rate
-        fft = new FFT(this, bands);
-        fft.input(sample);
-        */
-        rms = new Amplitude(this);
-        rms.input(sample);
-        playing = true;
-        return true;
-    } else {
-        return false;
-    }
-}
-
-Boolean stop_sample() {
-    playing = false;
-    // rms = null;
-    sample.stop();
-    return true;
-}
-
-Boolean load_gc_json(String filename) {
-
-    // parse json endpoint from google cloud speech-to-text api
-
-    json = loadJSONObject(filename);
-    JSONObject jsonResponse = json.getJSONObject("response");
-    JSONArray json_results = jsonResponse.getJSONArray("results");
-
-    words = new Word[0];
-
-    for (int i = 0; i < json_results.size(); i++) {
-
-        JSONObject r = json_results.getJSONObject(i);
-        JSONArray json_alternatives = r.getJSONArray("alternatives");
-
-        for (int j = 0; j < json_alternatives.size(); j++) {
-
-            JSONObject a = json_alternatives.getJSONObject(j);
-            float confidence = a.getFloat("confidence");
-            String transcript = a.getString("transcript");
-            JSONArray json_words = a.getJSONArray("words");
-
-            Word[] words_a;
-            words_a = new Word[json_words.size()];
-
-            for (int k = 0; k < json_words.size(); k++) {
-
-                JSONObject w = json_words.getJSONObject(k);
-                float in = float(w.getString("startTime").replace("s",""));
-                float out = float(w.getString("endTime").replace("s",""));
-                String txt = w.getString("word");
-
-                // new word object to array
-                // words[k] = new Word(in, out, txt);
-                words_a[k] = new Word(in, out, txt);
-
-                /*
-                println(words[k].in);
-                println(words[k].out);
-                println(words[k].txt);
-                */
-            }
-
-            // populate words[]
-            for (Word w_a : words_a) {
-                words = (Word[])append(words, w_a);
-            }
-        }
-    }
-    return true;
-}
-
-void stroke_text(String text, int weight, int x, int y) {
-
-    // see https://forum.processing.org/two/discussion/16700/how-to-outline-text
-
-    int value = 255 - (weight * 50);
-    /*
-    fill(value);
-    for (int i = -1; i < 2; i++) {
-    // for (int i = -weight; i <= weight; i++) {
-        text(text, x+i, y);
-        text(text, x, y+i);
-    }
-    */
-    fill(value);
-    text(text, x, y);
-}
