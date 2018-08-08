@@ -89,15 +89,35 @@ num=$2
 awk -F"[,:}]" '{for(i=1;i<=NF;i++){if($i~/'$KEY'\042/){print $(i+1)}}}' | tr -d '"' | sed -n ${num}p
 }
 
+# https://cloud.google.com/speech-to-text/docs/reference/rest/v1p1beta1/RecognitionConfig
 NAME=$(curl -sS -H "Content-Type: application/json" \
     -H "Authorization: Bearer "$(gcloud auth print-access-token) \
     https://speech.googleapis.com/v1p1beta1/speech:longrunningrecognize \
     --data '{
   "config": {
-    "sampleRateHertz": 16000,
     "languageCode": "en-US",
     "enableWordTimeOffsets": true,
-    "enableAutomaticPunctuation": true
+    "enableAutomaticPunctuation": true,
+    "useEnhanced": true,
+    "speechContexts": [
+      {
+        "phrases": [
+          "I come to this great magnificent house of worship tonight",
+          "because my conscience leaves me no other choice",
+          "I join you in this meeting because I am in deepest agreement",
+          "with the aims and work of the organization that brought us together",
+          "Clergy and Laymen Concerned About Vietnam",
+          "The recent statements of your executive committee are the sentiments of my own heart",
+          "and I found myself in full accord when I read its opening lines",
+          "A time comes when silence is betrayal",
+          "That time has come for us in relation to Vietnam"
+        ]
+      }
+    ],
+    "metadata": {
+      "interactionType": "PRESENTATION",
+      "audioTopic": "Martin Luther King Jr Vietnam War"
+    }
   },
   "audio": {
     "uri":"'$BUCKET'/speech-16k.wav"
