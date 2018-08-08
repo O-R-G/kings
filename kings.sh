@@ -40,7 +40,7 @@ filename="${filename%.*}"
 OUT=data/$filename.wav
 JSON=data/$filename-txt.json
 
-TMP=data/tmp-16k.wav
+TMP=data/speech-16k.wav
 
 #
 #   0.  authenticate

@@ -77,8 +77,8 @@ void setup() {
 void draw() {
 
     if (PDFoutput) {
-        beginRecord(PDF, "out.pdf");
-        mono = createFont("Speech-to-text-normal.ttf", 18);
+        beginRecord(PDF, "out/out.pdf");
+        mono = createFont("fonts/Speech-to-text-normal.ttf", 18);
         textFont(mono);
     }
     
@@ -137,7 +137,6 @@ void draw() {
     if (PDFoutput) {
         PDFoutput = false;
         endRecord();
-        exit();
     }
     counter++;
 }
@@ -317,13 +316,12 @@ void keyPressed() {
                 break;
             }
         case 'p':
-            /*
-            if (PDFoutput)
-                endRecord();
-            */
             PDFoutput = !PDFoutput;
-            println("** writing PDF to ./out.pdf **");
-            // exit();
+            println("** writing PDF to out/out.pdf **");
+            break;
+        case 'x':
+            println("** exit **");
+            exit();
             break;
         default:
             break;
