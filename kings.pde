@@ -49,9 +49,9 @@ String speech_src = "speech.wav";
 String txt_src = "txt.json";
 
 void setup() {
-    size(600, 900);
-    beginRecord(PDF, "out.pdf");
-    // PDFoutput = false;
+    size(400,800);
+    // beginRecord(PDF, "out.pdf");
+    // PDFoutput = false;    
     smooth();
     frameRate(60);
     mono = createFont("Speech-to-text-normal.ttf", 18);
@@ -79,17 +79,17 @@ void draw() {
 
     int _x = 0;
     int _y = 0;
-
     if (playing) {
 
-        // rms.analyze() returns [0 ... 1]
+        // rms.analyze() 
         sum_rms += (rms.analyze() - sum_rms) * smooth_factor;
         float rms_scaled = sum_rms * (height/2) * scale;
 
+        // typesetting
         for (Word w : words) {
             if (w.spoken()) {
-// if (w.opacity == 0.0)
-println(w.opacity);
+                if (w.opacity == 0.0)
+                    w.opacity(rms.analyze());
                 w.display(255, _x + box_x, _y + box_y);
                 if (!(_x + w.width + 8 * _space > box_w)) {
                     _x += (w.width + _space);
@@ -99,7 +99,6 @@ println(w.opacity);
                 }
             }
         }
-
         if (bar)
             rect(0, 0, rms_scaled, 10);
         if (circle)
@@ -115,9 +114,9 @@ println(w.opacity);
             }
         }
         */
-
     }
     if (PDFoutput) {
+        PDFoutput = false;
         endRecord();
         exit();
     }
