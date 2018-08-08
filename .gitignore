@@ -1,3 +1,5 @@
 .DS_Store
 data/*.wav
-data/txt.json
+data/*.json
+data/archive/*.wav
+data/archive/*.json
