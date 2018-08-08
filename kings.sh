@@ -12,9 +12,6 @@ KEY=/Users/reinfurt/Documents/Projects/KINGS/software/google-cloud-platform/json
 BUCKET=gs://kings-speech-to-text
 
 IN=data/speech.wav
-OUT=data/speech.wav
-TMP=data/speech-16k.wav
-JSON=data/txt.json
 
 while [ "$1" != "" ]; do
     case $1 in
@@ -35,6 +32,15 @@ Input audio files can be any format that ffmpeg can handle.
     esac
     shift
 done
+
+filename=$(basename -- "$IN")
+extension="${filename##*.}"
+filename="${filename%.*}"
+
+OUT=data/$filename.wav
+JSON=data/$filename-txt.json
+
+TMP=data/tmp-16k.wav
 
 #
 #   0.  authenticate
@@ -72,6 +78,8 @@ ffmpeg -i $IN -acodec pcm_s16le -ac 1 -ar 44100 $OUT
 #   include commandline flag for long-running
 
 gsutil cp $TMP $BUCKET
+
+rm $TMP
 
 #
 #   3.  gcloud speech recognize, return data/txt.json
