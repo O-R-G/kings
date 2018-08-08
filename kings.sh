@@ -6,12 +6,16 @@ q#!/bin/bash
 # gc project kings-speech-to-text, gc bucket kings-speech-to-text 
 # authentication key as bash environment variable
 
-KEY="/Users/eric/dev/kings-auth/kings-212617-06ed0601c807.json"
+
+KEY="/Users/reinfurt/Documents/Projects/KINGS/software/google\ cloud\ platform/json/auth/kings-speech-to-text-cb6be9604529.json"
+# KEY="/Users/eric/dev/kings-auth/kings-212617-06ed0601c807.json"
 IN=data/speech.wav
 OUT=data/speech.wav
 TMP=data/speech-16k.wav
 JSON=data/txt.json	
-BUCKET=gs://kings-speech-to-text-2
+BUCKET=gs://kings-speech-to-text
+# BUCKET=gs://kings-speech-to-text-2
+
 
 while [ "$1" != "" ]; do
     case $1 in
