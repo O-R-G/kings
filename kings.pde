@@ -45,16 +45,14 @@ float playback_rate = 1.0;
 float amp_floor = 0.04; // 0.02 0.04 [0.08]
 float _space;
 float _leading;
-String speech_src = "speech.wav";
-String txt_src = "txt.json";
 
 void setup() {
     size(400,800);
     // beginRecord(PDF, "out.pdf");
-    // PDFoutput = false;    
+    // PDFoutput = false;
     smooth();
     frameRate(60);
-    mono = createFont("Speech-to-text-normal.ttf", 18);
+    mono = createFont("fonts/Speech-to-text-normal.ttf", 18);
     textFont(mono);
     _space = textWidth(" ");
     _leading = 24;
@@ -64,8 +62,9 @@ void setup() {
     box_h = height - box_y * 2;
     device = new AudioDevice(this, 44100, bands);
     r_width = width/float(bands);
-    sample = new SoundFile(this, speech_src);
-    load_gc_json(txt_src);
+    String[] srcs = getDataFiles(sketchPath("data"));
+    sample = new SoundFile(this, srcs[0]);
+    load_gc_json(srcs[1]);
     println("READY ...");
 }
 
@@ -81,7 +80,7 @@ void draw() {
     int _y = 0;
     if (playing) {
 
-        // rms.analyze() 
+        // rms.analyze()
         sum_rms += (rms.analyze() - sum_rms) * smooth_factor;
         float rms_scaled = sum_rms * (height/2) * scale;
 
@@ -283,6 +282,25 @@ Boolean load_gc_json(String filename) {
         }
     }
     return true;
+}
+
+String[] getDataFiles(String dir) {
+  File file = new File(dir);
+  String txt_src = "";
+  String wav_src = "";
+
+  if (file.isDirectory()) {
+    String[] names = file.list();
+    for(String fn : names) {
+      if (fn.contains(".wav")) {
+        wav_src = fn;
+      } else if (fn.contains(".json")) {
+        txt_src = fn;
+      }
+    }
+    return new String[]{wav_src, txt_src};
+  }
+  return null;
 }
 
 void stroke_text(String text, int weight, int x, int y) {
