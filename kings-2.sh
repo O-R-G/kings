@@ -6,9 +6,9 @@
 # gc project kings-speech-to-text, gc bucket kings-speech-to-text
 # authentication key as bash environment variable
 
-# KEY=/Users/eric/dev/kings-auth/kings-212617-06ed0601c807.json
+#KEY=/Users/eric/dev/kings-auth/kings-212617-06ed0601c807.json
 KEY=/Users/reinfurt/Documents/Projects/KINGS/software/google-cloud-platform/json/auth/kings-speech-to--1532733222205-b656714f6407.json
-# BUCKET=gs://kings-speech-to-text-2
+#BUCKET=gs://kings-speech-to-text-2
 BUCKET=gs://kings-speech-to-text
 
 IN=data/speech.wav
@@ -101,13 +101,10 @@ NAME=$(curl -sS -H "Content-Type: application/json" \
     "enableWordTimeOffsets": true,
     "enableAutomaticPunctuation": true,
     "useEnhanced": true,
-    "speechContexts": [
-      {
-        "phrases": [
-          ""
-        ]
-      }
-    ],
+    "model": "video",
+    "speechContexts":{
+        "phrases": [""]
+    },
     "metadata": {
       "interactionType": "PRESENTATION",
       "audioTopic": "Martin Luther King Jr."
