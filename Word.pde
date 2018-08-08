@@ -46,7 +46,7 @@ class Word {
 
     void display(int fill, int _x, int _y) {
         fill(fill, int(opacity));
-        if (PDFoutput)
+        // if (PDFoutput)
             text(txt, _x, _y);
     }
 }

@@ -49,6 +49,7 @@ String speech_src = "speech.wav";
 String txt_src = "txt.json";
 
 void setup() {
+    size(400,800);
     // beginRecord(PDF, "out.pdf");
     // PDFoutput = false;    
     smooth();
