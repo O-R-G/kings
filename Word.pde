@@ -10,12 +10,16 @@ class Word {
     float in, out;
     float width;
     float opacity;
+    Boolean paragraph;
     Boolean spoken;
 
-    Word(float in_, float out_, String txt_) {
+    Word(float in_, float out_, String txt_, Boolean paragraph_) {
         in = in_;
         out = out_;
         txt = txt_;
+        paragraph = paragraph_;
+        if (paragraph) 
+            txt += " ...";
         width = textWidth(this.txt);
         length = txt.length();
         opacity = 0.0;
@@ -23,7 +27,7 @@ class Word {
     }
 
     Boolean speaking() {
-        float now = (float)(millis() - millis_start)/1000;
+        float now = (float)current_time/1000;
         if ((in <= now) && (out >= now))
             return true;
         else
@@ -31,7 +35,7 @@ class Word {
     }
 
     Boolean spoken() {
-        float now = (float)(millis() - millis_start)/1000;
+        float now = (float)current_time/1000;
         if ((in <= now))
             return true;
         else

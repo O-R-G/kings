@@ -28,7 +28,6 @@ PFont mono;
 Word[] words;           
 String[] txt;           // speech fragments as text string
 
-int millis_start = 0;
 Boolean playing = false;
 Boolean bar = true;
 Boolean circle = false;
@@ -37,6 +36,8 @@ Boolean wave = false;
 Boolean speech_flag = false;
 Boolean lastwordspoken = false;
 Boolean PDFoutput = false;
+int millis_start = 0;
+int current_time = 0;               // position in soundfile (millisec)
 int counter = 0;
 int bands = 128;                    // FFT bands (multiple of sampling rate)
 int granularity = 3;
@@ -55,13 +56,15 @@ float _space;
 float _leading;
 
 void setup() {
-    size(400,400);
+    size(450,800);         // 9 x 16
+    pixelDensity(displayDensity());
+    println("displayDensity : " + displayDensity());
     smooth();
     frameRate(60);
-    mono = createFont("fonts/Speech-to-text-normal.ttf", 18);
+    mono = createFont("fonts/Speech-to-text-normal.ttf", 16);
     textFont(mono);
-    _space = textWidth(" ");   // [], + 10
-    _leading = 26;  // [24]
+    _space = textWidth(" ");    // [], + 10
+    _leading = 22;  // [24]
     box_x = 40;     // [20]
     box_y = 60;     // [40]
     box_w = width - box_x * 2;
@@ -72,13 +75,14 @@ void setup() {
     sample = new SoundFile(this, srcs[0]);
     load_gc_json(srcs[1]);
     println("READY ...");
+    println("sample.duration() : " + sample.duration() + " seconds");
 }
 
 void draw() {
 
     if (PDFoutput) {
         beginRecord(PDF, "out/out.pdf");
-        mono = createFont("fonts/Speech-to-text-normal.ttf", 18);
+        mono = createFont("fonts/Speech-to-text-normal.ttf", 16);
         textFont(mono);
     }
     
@@ -86,13 +90,14 @@ void draw() {
     fill(255);
     noStroke();
 
-    if (playing && ((millis() - millis_start) >= sample.duration() * 1000))
-        stop_sample();
-
     int _x = 0;
     int _y = 0;
 
     if (playing) {
+
+        current_time = millis() - millis_start;
+        if (playing && ((current_time) >= sample.duration() * 1000))
+            stop_sample();
 
         // analyze amplitude
         sum_rms += (rms.analyze() - sum_rms) * smooth_factor;
@@ -213,10 +218,16 @@ Boolean load_gc_json(String filename) {
                 float in = float(w.getString("startTime").replace("s",""));
                 float out = float(w.getString("endTime").replace("s",""));
                 String txt = w.getString("word");
-
+                boolean paragraph;
+                if (w.hasKey("paragraph") == true) {
+                    paragraph = w.getBoolean("paragraph");
+                    // println(paragraph);
+                } else { 
+                    paragraph = false;
+                }
                 // new word object to array
                 // words[k] = new Word(in, out, txt);
-                words_a[k] = new Word(in, out, txt);
+                words_a[k] = new Word(in, out, txt, paragraph);
 
                 /*
                 println(words[k].in);
@@ -342,14 +353,16 @@ void keyPressed() {
             println(amp_floor);
             break;
         case LEFT:
-            if (granularity > 1)
-                granularity--;
-            background(204);
+            // current_time-=1000;
             break;
         case RIGHT:
-            if (granularity < width/4)
-                granularity++;
-            background(204);
+            /*
+            background(255);
+            current_time+=1000;
+            sample.stop();
+            sample.cue(current_time);
+            sample.play();
+            */
             break;
         default:
             break;

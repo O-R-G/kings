@@ -38,7 +38,7 @@ extension="${filename##*.}"
 filename="${filename%.*}"
 
 OUT=data/$filename.wav
-JSON=data/$filename-txt.json
+JSON=data/$filename.json
 
 TMP=data/speech-16k.wav
 
