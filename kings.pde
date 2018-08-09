@@ -55,7 +55,7 @@ float _space;
 float _leading;
 
 void setup() {
-    size(600,1000);
+    size(400,400);
     smooth();
     frameRate(60);
     mono = createFont("fonts/Speech-to-text-normal.ttf", 18);
