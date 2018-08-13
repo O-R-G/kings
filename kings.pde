@@ -268,17 +268,13 @@ void stroke_text(String text, int weight, int x, int y) {
 
     // see https://forum.processing.org/two/discussion/16700/how-to-outline-text
 
-    int value = 255 - (weight * 50);
-    /*
-    fill(value);
-    for (int i = -1; i < 2; i++) {
-    // for (int i = -weight; i <= weight; i++) {
+    // int value = 255 - (weight * 50);
+    // fill(value);
+    // for (int i = -1; i < 2; i++) {
+    for (int i = -weight; i <= weight; i++) {
         text(text, x+i, y);
         text(text, x, y+i);
     }
-    */
-    fill(value);
-    text(text, x, y);
 }
 
 /* 
