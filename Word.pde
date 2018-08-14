@@ -44,14 +44,13 @@ class Word {
 
     void opacity(float value) {
         if (opacity == 0.0)
-            opacity = map(value, 0.0, 0.05, 100.0, 255.0);
-            // opacity = map(value, 0.0, 0.08, 100.0, 255.0);
+            // opacity = map(value, 0.0, 0.05, 100.0, 255.0);
+            opacity = map(value, 0.0, 0.08, 100.0, 255.0);
     }
 
     void display(int fill, int _x, int _y) {
         fill(fill, int(opacity));
-        text(txt, _x, _y);
-        // attempt at line weight, though better with geomerative 
+        text(txt, _x, _y); 
         // int weight  = int(map(fill, 0.0, 255.0, 0.0, 12.0));
         // stroke_text(txt, weight, _x, _y);
     }

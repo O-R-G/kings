@@ -108,6 +108,12 @@ void draw() {
             if (w.spoken()) {
                 if (w.opacity == 0.0)
                     w.opacity(rms.analyze());
+                /*
+                if (w.paragraph) {
+                    _x = 0;
+                    _y += _leading;
+                }
+                */
                 w.display(255, _x + box_x, _y + box_y);
                 if (!(_x + w.width + 8 * _space > box_w)) {
                     _x += (w.width + _space);
