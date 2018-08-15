@@ -57,8 +57,8 @@ float _leading;
 
 void setup() {
     size(450,800);         // 9 x 16
-    pixelDensity(displayDensity());
-    println("displayDensity : " + displayDensity());
+    // pixelDensity(displayDensity());
+    // println("displayDensity : " + displayDensity());
     smooth();
     frameRate(60);
     mono = createFont("fonts/Speech-to-text-normal.ttf", 16);
