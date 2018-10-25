@@ -2,7 +2,7 @@
  * kings
  *
  * speech to text transcription using google cloud api
- * to visually animate the typesetting of spoken language 
+ * to visually animate the typesetting of spoken language
  * and translate the cadence into visual / dynamic form
  *
  * uses processing.sound for Amplitude analysis
@@ -12,7 +12,7 @@
  * developed for Coretta Scott and Martin Luther King
  * memorial, Boston Common w/ Adam Pendleton & David Adjaye
  *
- */ 
+ */
 
 
 import processing.sound.*;
@@ -25,7 +25,7 @@ Amplitude rms;
 JSONObject json;
 PFont mono;
 
-Word[] words;           
+Word[] words;
 String[] txt;           // speech fragments as text string
 
 Boolean playing = false;
@@ -57,6 +57,7 @@ float _leading;
 
 void setup() {
     size(450,800);         // 9 x 16
+    // size(1600,1600);         // 9 x 16
     // pixelDensity(displayDensity());
     // println("displayDensity : " + displayDensity());
     smooth();
@@ -85,7 +86,7 @@ void draw() {
         mono = createFont("fonts/Speech-to-text-normal.ttf", 16);
         textFont(mono);
     }
-    
+
     background(0);
     fill(255);
     noStroke();
@@ -108,12 +109,7 @@ void draw() {
             if (w.spoken()) {
                 if (w.opacity == 0.0)
                     w.opacity(rms.analyze());
-                /*
-                if (w.paragraph) {
-                    _x = 0;
-                    _y += _leading;
-                }
-                */
+
                 w.display(255, _x + box_x, _y + box_y);
                 if (!(_x + w.width + 8 * _space > box_w)) {
                     _x += (w.width + _space);
@@ -126,6 +122,11 @@ void draw() {
                         rect(10,10,width-10, height-10);
                     }
                 }
+
+                // if (w.paragraph) {
+                //     _x = 0;
+                //     _y += 2*_leading;
+                // }
             }
         }
         if (bar)
@@ -228,7 +229,7 @@ Boolean load_gc_json(String filename) {
                 if (w.hasKey("paragraph") == true) {
                     paragraph = w.getBoolean("paragraph");
                     // println(paragraph);
-                } else { 
+                } else {
                     paragraph = false;
                 }
                 // new word object to array
@@ -283,7 +284,7 @@ void stroke_text(String text, int weight, int x, int y) {
     }
 }
 
-/* 
+/*
 
     interaction
 
@@ -370,4 +371,3 @@ void keyPressed() {
             break;
     }
 }
-
