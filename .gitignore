@@ -1,6 +1,7 @@
 .DS_Store
 data/*.wav
 data/*.json
+data/*.mp4
 data/archive/*.wav
 data/archive/*.json
 out/out.pdf

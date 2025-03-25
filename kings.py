@@ -41,6 +41,21 @@ def convert_audio(input_file, output_file, sample_rate):
         sys.exit(1)
 
 
+def combine_video_and_audio(video_path, audio_path, output_path):
+    try:
+        video_stream = ffmpeg.input(video_path)
+        audio_stream = ffmpeg.input(audio_path)
+        (
+            ffmpeg
+            .output(video_stream, audio_stream, output_path, vcodec='copy', acodec='aac', shortest=None)
+            .run(overwrite_output=True)
+        )
+        print(f"Combined video + audio saved to {output_path}")
+    except ffmpeg.Error as e:
+        print(f"Error combining video and audio:\n{e.stderr.decode()}")
+        sys.exit(1)
+
+
 def convert_to_mono(input_file, output_file):
     audio = AudioSegment.from_file(input_file)
     audio = audio.set_channels(1)
@@ -93,27 +108,40 @@ def main():
     print("process audio ...")
     # Prepare output paths
     os.makedirs("data", exist_ok=True)
-    tmp_16 = f"data/speech-16k.wav"
-    tmp_44 = f"data/speech-44k.wav"
+    filepath_wav_16 = f"data/speech-16k.wav"
+    filepath_wav_16_mono = f"data/speech-16k-mono.wav"
+    filepath_wav_44 = f"data/speech-44k.wav"
+    filepath_mp4_silent = f"data/speech-silent.mp4"
+    filepath_json = "data/speech.json"
+    filepath_output = "data/output.mp4"
     # for google speech-to-text api
-    convert_audio(input_file, tmp_16, 16000)
+    convert_audio(input_file, filepath_wav_16, 16000)
     # for processing
-    convert_audio(input_file, tmp_44, 44100)
+    convert_audio(input_file, filepath_wav_44, 44100)
 
-    convert_to_mono(tmp_16, "data/speech-16k-mono.wav")
-    transcribe_audio("data/speech-16k-mono.wav", "data/speech.json")
+    convert_to_mono(filepath_wav_16, filepath_wav_16_mono)
+    transcribe_audio(filepath_wav_16_mono, filepath_json)
 
     # Step 5: Run Processing sketch if JSON was created
-    if os.path.exists("data/speech.json"):
+    if os.path.exists(filepath_json):
         print("speech.json created successfully. Launching Processing sketch...")
         try:
             subprocess.run(
                 ["processing-java", "--sketch=" + os.getcwd(), "--run"],
                 check=True
             )
+
         except subprocess.CalledProcessError as e:
             print(f"Error running Processing sketch:\n{e}")
             sys.exit(1)
+
+        combine_video_and_audio("data/speech-silent.mp4", filepath_wav_44, filepath_output)
+        print("removing files...")
+        os.remove(filepath_wav_16)
+        os.remove(filepath_wav_44)
+        os.remove(filepath_wav_16_mono)
+        os.remove(filepath_json)
+        os.remove(filepath_mp4_silent)
     else:
         print("Error: speech.json not found. Skipping Processing sketch.")
 

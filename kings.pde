@@ -17,7 +17,9 @@
 
 import processing.sound.*;
 import processing.pdf.*;
+import com.hamoid.*;
 
+VideoExport videoExport;
 SoundFile sample;
 AudioDevice device;
 FFT fft;
@@ -79,6 +81,10 @@ void setup() {
     load_gc_json(json_src);
     println("READY ...");
     println("sample.duration() : " + sample.duration() + " seconds");
+    videoExport = new VideoExport(this, "data/speech-silent.mp4");
+    videoExport.setFrameRate(60);
+    videoExport.startMovie();
+    play_sample();
 }
 
 void draw() {
@@ -96,11 +102,14 @@ void draw() {
     int _x = 0;
     int _y = 0;
 
+
+
     if (playing) {
 
         current_time = millis() - millis_start;
-        if (playing && ((current_time) >= sample.duration() * 1000))
-            stop_sample();
+        if (playing && ((current_time) >= sample.duration() * 1000)) {
+            stop_sample();`
+        }
 
         // analyze amplitude
         sum_rms += (rms.analyze() - sum_rms) * smooth_factor;
@@ -109,6 +118,7 @@ void draw() {
         // typesetting
         for (Word w : words) {
             if (w.spoken()) {
+
                 if (w.opacity == 0.0)
                     w.opacity(rms.analyze());
 
@@ -146,11 +156,16 @@ void draw() {
             }
         }
         */
+        videoExport.saveFrame();  // capture each frame
     }
 
     if (PDFoutput) {
         PDFoutput = false;
         endRecord();
+    }
+    if (!playing) {
+        videoExport.endMovie();
+        exit();
     }
     counter++;
 }
