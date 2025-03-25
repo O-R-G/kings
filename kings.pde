@@ -72,9 +72,11 @@ void setup() {
     box_h = height - box_y * 2;
     device = new AudioDevice(this, 44100, bands);
     r_width = width/float(bands);
-    String[] srcs = getDataFiles(sketchPath("data"));
-    sample = new SoundFile(this, srcs[0]);
-    load_gc_json(srcs[1]);
+    // String[] srcs = getDataFiles(sketchPath("data"));
+    String sample_src = sketchPath("data/speech-44k.wav");
+    String json_src = sketchPath("data/speech.json");
+    sample = new SoundFile(this, sample_src);
+    load_gc_json(json_src);
     println("READY ...");
     println("sample.duration() : " + sample.duration() + " seconds");
 }
