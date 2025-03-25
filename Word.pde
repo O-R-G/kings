@@ -48,7 +48,7 @@ class Word {
             opacity = map(value, 0.0, 0.08, 100.0, 255.0);
     }
 
-    void display(int fill, int _x, int _y) {
+    void display(int fill, float _x, float _y) {
         fill(fill, int(opacity));
         text(txt, _x, _y);
         // int weight  = int(map(fill, 0.0, 255.0, 0.0, 12.0));

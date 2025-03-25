@@ -58,6 +58,7 @@ float _space;
 float _leading;
 
 void setup() {
+    // size(1080, 1920);
     size(450,800);         // 9 x 16
     // size(1600,1600);         // 9 x 16
     // pixelDensity(displayDensity());
@@ -83,6 +84,7 @@ void setup() {
     println("sample.duration() : " + sample.duration() + " seconds");
     videoExport = new VideoExport(this, "data/speech-silent.mp4");
     videoExport.setFrameRate(60);
+    videoExport.setQuality(VideoExport.Quality.MAX);
     videoExport.startMovie();
     play_sample();
 }
