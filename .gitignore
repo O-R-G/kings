@@ -4,3 +4,5 @@ data/*.json
 data/archive/*.wav
 data/archive/*.json
 out/out.pdf
+.env
+*.json

@@ -199,8 +199,7 @@ Boolean load_gc_json(String filename) {
     // parse json endpoint from google cloud speech-to-text api
 
     json = loadJSONObject(filename);
-    JSONObject jsonResponse = json.getJSONObject("response");
-    JSONArray json_results = jsonResponse.getJSONArray("results");
+    JSONArray json_results = json.getJSONArray("results");
 
     words = new Word[0];
 
@@ -222,8 +221,8 @@ Boolean load_gc_json(String filename) {
             for (int k = 0; k < json_words.size(); k++) {
 
                 JSONObject w = json_words.getJSONObject(k);
-                float in = float(w.getString("startTime").replace("s",""));
-                float out = float(w.getString("endTime").replace("s",""));
+                float in = float(w.getString("start_time").replace("s",""));
+                float out = float(w.getString("end_time").replace("s",""));
                 String txt = w.getString("word");
                 boolean paragraph;
                 if (w.hasKey("paragraph") == true) {

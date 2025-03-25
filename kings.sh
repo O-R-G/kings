@@ -100,48 +100,48 @@ awk -F"[,:}]" '{for(i=1;i<=NF;i++){if($i~/'$KEY'\042/){print $(i+1)}}}' | tr -d 
 }
 
 # https://cloud.google.com/speech-to-text/docs/reference/rest/v1p1beta1/RecognitionConfig
-NAME=$(curl -sS -H "Content-Type: application/json" \
-    -H "Authorization: Bearer "$(gcloud auth print-access-token) \
-    https://speech.googleapis.com/v1p1beta1/speech:longrunningrecognize \
-    --data '{
-  "config": {
-    "languageCode": "en-US",
-    "enableWordTimeOffsets": true,
-    "enableAutomaticPunctuation": true,
-    "useEnhanced": true,
-    "model": "video",
-    "speechContexts":{
-        "phrases": [""]
-    },
-    "metadata": {
-      "interactionType": "PRESENTATION",
-      "audioTopic": "Martin Luther King Jr."
-    }
-  },
-  "audio": {
-    "uri":"'$BUCKET'/speech-16k.wav"
-  }
-}' | jsonValue name)
-
-NAME=$(echo $NAME)
-
-echo "submit job with id "$NAME" ..."
-
-RESPONSE=""
-OUTPUT=""
-RESPONSELENGTH="$(echo $RESPONSE | wc -w | tr -d ' ')"
-while [ $RESPONSELENGTH -lt 1 ]
-do
-  OUTPUT=$(curl -sS -H "Content-Type: application/json" \
-      -H "Authorization: Bearer "$(gcloud auth print-access-token) \
-    https://speech.googleapis.com/v1/operations/$NAME)
-  RESPONSE=$(echo ${OUTPUT} | jsonValue response)
-  RESPONSELENGTH="$(echo $RESPONSE | wc -w | tr -d ' ')"
-  echo "wait ..."
-  sleep 2
-done
-echo 'received translation ...'
-echo $OUTPUT > $JSON
+#NAME=$(curl -sS -H "Content-Type: application/json" \
+#    -H "Authorization: Bearer "$(gcloud auth print-access-token) \
+#    https://speech.googleapis.com/v1p1beta1/speech:longrunningrecognize \
+#    --data '{
+#  "config": {
+#    "languageCode": "en-US",
+#    "enableWordTimeOffsets": true,
+#    "enableAutomaticPunctuation": true,
+#    "useEnhanced": true,
+#    "model": "video",
+#    "speechContexts":{
+#        "phrases": [""]
+#    },
+#    "metadata": {
+#      "interactionType": "PRESENTATION",
+#      "audioTopic": "Martin Luther King Jr."
+#    }
+#  },
+#  "audio": {
+#    "uri":"'$BUCKET'/speech-16k.wav"
+#  }
+#}' | jsonValue name)
+#
+#NAME=$(echo $NAME)
+#
+#echo "submit job with id "$NAME" ..."
+#
+#RESPONSE=""
+#OUTPUT=""
+#RESPONSELENGTH="$(echo $RESPONSE | wc -w | tr -d ' ')"
+#while [ $RESPONSELENGTH -lt 1 ]
+#do
+#  OUTPUT=$(curl -sS -H "Content-Type: application/json" \
+#      -H "Authorization: Bearer "$(gcloud auth print-access-token) \
+#    https://speech.googleapis.com/v1/operations/$NAME)
+#  RESPONSE=$(echo ${OUTPUT} | jsonValue response)
+#  RESPONSELENGTH="$(echo $RESPONSE | wc -w | tr -d ' ')"
+#  echo "wait ..."
+#  sleep 2
+#done
+#echo 'received translation ...'
+#echo $OUTPUT > $JSON
 
 #
 #   4.  run .pde using data/txt.json and data/speech.wav
