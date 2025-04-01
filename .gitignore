@@ -7,3 +7,4 @@ data/archive/*.json
 out/out.pdf
 .env
 *.json
+ffmpeg.txt
