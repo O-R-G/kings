@@ -84,7 +84,7 @@ void setup() {
     println("sample.duration() : " + sample.duration() + " seconds");
     videoExport = new VideoExport(this, "data/speech-silent.mp4");
     videoExport.setFrameRate(60);
-    videoExport.setQuality(VideoExport.Quality.MAX);
+    // videoExport.setQuality(VideoExport.Quality.MAX);
     videoExport.startMovie();
     play_sample();
 }
@@ -217,8 +217,8 @@ Boolean load_gc_json(String filename) {
 
     // parse json endpoint from google cloud speech-to-text api
 
-    json = loadJSONObject(filename);
-    JSONArray json_results = json.getJSONArray("results");
+    // json = loadJSONObject(filename);
+    JSONArray json_results = loadJSONArray(filename);
     println(json_results);
     words = new Word[0];
 
