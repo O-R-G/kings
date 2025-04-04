@@ -9,15 +9,16 @@ import os
 import subprocess  # ← required for running shell commands
 from pydub import AudioSegment
 import json
+from openai import OpenAI
 
 # Load the .env file
 load_dotenv()
 
 # Get the API key
-api_key_path = os.getenv("GOOGLE_CLOUD_API_KEY_PATH")
+openai_api_key = os.getenv("OPENAI_API_KEY")
 
-# Create the Google Cloud client
-client = speech.SpeechClient.from_service_account_file(api_key_path)
+client = OpenAI()
+
 
 # Help text and description
 DESCRIPTION = """\
@@ -64,20 +65,18 @@ def convert_to_mono(input_file, output_file):
 
 
 def transcribe_audio(input_file, output_file):
-    with open(input_file, 'rb') as audio_file:
-        content = audio_file.read()
-        audio = speech.RecognitionAudio(content=content)
-        config = speech.RecognitionConfig(
-            encoding = speech.RecognitionConfig.AudioEncoding.LINEAR16,
-            sample_rate_hertz = 16000,
-            language_code = "en-US",
-            enable_word_time_offsets=True
-        )
-        response = client.recognize(config=config, audio=audio)
-    response_dict = speech.RecognizeResponse.to_dict(response)
+    audio_file = open(input_file, "rb")
+    transcription = client.audio.transcriptions.create(
+        file=audio_file,
+        model="whisper-1",
+        response_format="verbose_json",
+        timestamp_granularities=["word"]
+    )
+    output = transcription.to_dict()["words"]
+    # output = json.loads(json_str)
     with open(output_file, 'w', encoding='utf-8') as f:
-        json.dump(response_dict, f, ensure_ascii=False, indent=2)
-
+        json.dump(output, f, ensure_ascii=False, indent=2)
+    # print(output)
 
 def main():
     # Set up argument parser
@@ -115,12 +114,14 @@ def main():
     filepath_json = "data/speech.json"
     filepath_output = "data/output.mp4"
     # for google speech-to-text api
-    convert_audio(input_file, filepath_wav_16, 16000)
+    # convert_audio(input_file, filepath_wav_16, 16000)
     # for processing
-    convert_audio(input_file, filepath_wav_44, 44100)
+    # convert_audio(input_file, filepath_wav_44, 44100)
 
-    convert_to_mono(filepath_wav_16, filepath_wav_16_mono)
-    transcribe_audio(filepath_wav_16_mono, filepath_json)
+    # convert_to_mono(filepath_wav_16, filepath_wav_16_mono)
+    # transcribe_audio(filepath_wav_44, filepath_json)
+
+
 
     # Step 5: Run Processing sketch if JSON was created
     if os.path.exists(filepath_json):

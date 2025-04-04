@@ -219,7 +219,7 @@ Boolean load_gc_json(String filename) {
 
     json = loadJSONObject(filename);
     JSONArray json_results = json.getJSONArray("results");
-
+    println(json_results);
     words = new Word[0];
 
     for (int i = 0; i < json_results.size(); i++) {
@@ -240,8 +240,8 @@ Boolean load_gc_json(String filename) {
             for (int k = 0; k < json_words.size(); k++) {
 
                 JSONObject w = json_words.getJSONObject(k);
-                float in = float(w.getString("start_time").replace("s",""));
-                float out = float(w.getString("end_time").replace("s",""));
+                float in = float(w.getString("start").replace("s",""));
+                float out = float(w.getString("end").replace("s",""));
                 String txt = w.getString("word");
                 boolean paragraph;
                 if (w.hasKey("paragraph") == true) {
