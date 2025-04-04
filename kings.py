@@ -114,12 +114,12 @@ def main():
     filepath_json = "data/speech.json"
     filepath_output = "data/output.mp4"
     # for google speech-to-text api
-    # convert_audio(input_file, filepath_wav_16, 16000)
+    convert_audio(input_file, filepath_wav_16, 16000)
     # for processing
-    # convert_audio(input_file, filepath_wav_44, 44100)
+    convert_audio(input_file, filepath_wav_44, 44100)
 
-    # convert_to_mono(filepath_wav_16, filepath_wav_16_mono)
-    # transcribe_audio(filepath_wav_44, filepath_json)
+    convert_to_mono(filepath_wav_16, filepath_wav_16_mono)
+    transcribe_audio(filepath_wav_44, filepath_json)
 
 
 

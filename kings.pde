@@ -218,54 +218,36 @@ Boolean load_gc_json(String filename) {
     // parse json endpoint from google cloud speech-to-text api
 
     // json = loadJSONObject(filename);
-    JSONArray json_results = loadJSONArray(filename);
-    println(json_results);
+    JSONArray json_words = loadJSONArray(filename);
+    println(json_words);
     words = new Word[0];
+    Word[] words_a;
+    words_a = new Word[json_words.size()];
+    for (int k = 0; k < json_words.size(); k++) {
 
-    for (int i = 0; i < json_results.size(); i++) {
-
-        JSONObject r = json_results.getJSONObject(i);
-        JSONArray json_alternatives = r.getJSONArray("alternatives");
-
-        for (int j = 0; j < json_alternatives.size(); j++) {
-
-            JSONObject a = json_alternatives.getJSONObject(j);
-            float confidence = a.getFloat("confidence");
-            String transcript = a.getString("transcript");
-            JSONArray json_words = a.getJSONArray("words");
-
-            Word[] words_a;
-            words_a = new Word[json_words.size()];
-
-            for (int k = 0; k < json_words.size(); k++) {
-
-                JSONObject w = json_words.getJSONObject(k);
-                float in = float(w.getString("start").replace("s",""));
-                float out = float(w.getString("end").replace("s",""));
-                String txt = w.getString("word");
-                boolean paragraph;
-                if (w.hasKey("paragraph") == true) {
-                    paragraph = w.getBoolean("paragraph");
-                    // println(paragraph);
-                } else {
-                    paragraph = false;
-                }
-                // new word object to array
-                // words[k] = new Word(in, out, txt);
-                words_a[k] = new Word(in, out, txt, paragraph);
-
-                /*
-                println(words[k].in);
-                println(words[k].out);
-                println(words[k].txt);
-                */
-            }
-
-            // populate words[]
-            for (Word w_a : words_a) {
-                words = (Word[])append(words, w_a);
-            }
+        JSONObject w = json_words.getJSONObject(k);
+        float in = w.getFloat("start");
+        float out = w.getFloat("end");
+        String txt = w.getString("word");
+        boolean paragraph;
+        if (w.hasKey("paragraph") == true) {
+            paragraph = w.getBoolean("paragraph");
+            // println(paragraph);
+        } else {
+            paragraph = false;
         }
+        // new word object to array
+        // words[k] = new Word(in, out, txt);
+        words_a[k] = new Word(in, out, txt, paragraph);
+
+        /*
+        println(words[k].in);
+        println(words[k].out);
+        println(words[k].txt);
+        */
+    }
+    for (Word w_a : words_a) {
+        words = (Word[])append(words, w_a);
     }
     return true;
 }
